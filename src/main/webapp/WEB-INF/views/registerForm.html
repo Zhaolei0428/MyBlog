@@ -11,7 +11,7 @@
     <div id="content">
       <h1>Register</h1>
   
-      <form method="POST" th:object="${user}">
+      <form method="POST" th:object="${user}" th:action="@{/register}">
         <div class="errors" th:if="${#fields.hasErrors('*')}">
           <ul>
             <li th:each="err : ${#fields.errors('*')}" 

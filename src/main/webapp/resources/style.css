@@ -1,6 +1,6 @@
 body {
-	background: #ff9933 url(images/spitter_background.gif) no-repeat
-		fixed left top;
+	background: url(images/background.jpg) no-repeat
+		fixed center top;
 	color: #333333;
 	font-family: sans-serif;
 	font-size: 0.75em;
