@@ -1,21 +1,43 @@
 package com.zhao.blog.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.rememberme.InMemoryTokenRepositoryImpl;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
+@PropertySource(value = "classpath:application.properties")
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    private DataSource dataSource;
+
+    @Value("${spring.queries.users-query}")
+    private String usersQuery;
+
+    @Value("${spring.queries.roles-query}")
+    private String rolesQuery;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception{
-        auth.inMemoryAuthentication()
-                .withUser("user").password("guest").roles("USER").and()
-        .withUser("admin").password("admin").roles("USER", "ADMIN");
+        auth
+            .jdbcAuthentication()
+            .usersByUsernameQuery(usersQuery)
+            .authoritiesByUsernameQuery(rolesQuery)
+            .dataSource(dataSource)
+            .passwordEncoder(bCryptPasswordEncoder);
     }
 
     @Override
@@ -23,10 +45,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .formLogin()
                     .loginPage("/login")
+                    .failureUrl("/login?error=true")
+                    .defaultSuccessUrl("/admin/home")
+                    .usernameParameter("email")
+                    .passwordParameter("password")
                 .and()
                 .logout()
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                     .logoutSuccessUrl("/")
-                    .logoutUrl("/logout")
+                .and()
+                .exceptionHandling().accessDeniedPage("/access-denied")
                 .and()
                 .rememberMe()
                     .tokenRepository(new InMemoryTokenRepositoryImpl())
@@ -37,8 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .realmName("blog")
                 .and()
                 .authorizeRequests()
-                    .antMatchers("/").authenticated()
-                    .antMatchers("/admin").hasRole("ADMIN")
+                    .antMatchers("/admin/**").hasAnyAuthority("ADMIN")
                     .anyRequest().permitAll();
     }
 }

@@ -1,5 +1,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
   <head>
     <title>Spitter</title>
     <link rel="stylesheet" 
@@ -10,9 +11,20 @@
     <div id="header" th:include="page :: header"></div>
   
     <div id="content">
+      <div sec:authorize="isAuthenticated()">
+           Hello <span sec:authentication="name">someone</span>
+      </div>
       <h1>Welcome to MyBlog</h1>
+        <span sec:authorize-url="/admin">
+            <br/><a th:href="@{/admin}">Admin</a><br/>
+        </span>
 
       <a th:href="@{/register}">Register</a>
+      <br/>
+
+      <!--<div sec:authorize="isAuthenticated()">-->
+        <!--<a th:href="@{/logout}">Logout</a>-->
+      <!--</div>-->
       
       <br/>
 

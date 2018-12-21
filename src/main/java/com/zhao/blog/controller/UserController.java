@@ -1,41 +1,59 @@
 package com.zhao.blog.controller;
 
-import com.zhao.blog.entity.User;
+import com.zhao.blog.model.User;
+import com.zhao.blog.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
-import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 
 @Controller
 public class UserController {
-    @RequestMapping(value = "/register", method = GET)
-    public String showRegistrationForm(Model model) {
-        model.addAttribute(new User());
-        return "registerForm";
-    }
 
-    @RequestMapping(value = "/register", method = POST)
-    public String processRegistration(
-            @Valid User user,
-            Errors errors) {
-        if(errors.hasErrors()) {
-            System.out.println(errors.getAllErrors());
-            return "registerForm";
-        }
-        return "redirect:/user/" + user.getUsername();
-    }
+    @Autowired
+    private UserService userService;
 
-    @RequestMapping(value = "/user/{username}", method = GET)
-    public String showUserProfile(
-            @PathVariable String username, Model model) {
+    @RequestMapping(value="/registration", method = RequestMethod.GET)
+    public ModelAndView registration(){
+        ModelAndView modelAndView = new ModelAndView();
         User user = new User();
-        user.setUsername(username);
-        model.addAttribute(user);
-        return "profile";
+        modelAndView.addObject("user", user);
+        modelAndView.setViewName("registration");
+        return modelAndView;
     }
+
+    @RequestMapping(value = "/registration", method = RequestMethod.POST)
+    public ModelAndView createNewUser(@Valid User user, BindingResult bindingResult) {
+        ModelAndView modelAndView = new ModelAndView();
+        User userExists = userService.findUserByEmail(user.getEmail());
+        if (userExists != null) {
+            bindingResult
+                    .rejectValue("email", "error.user",
+                            "There is already a user registered with the email provided");
+        }
+        if (bindingResult.hasErrors()) {
+            modelAndView.setViewName("registration");
+        } else {
+            userService.saveUser(user);
+            modelAndView.addObject("successMessage", "User has been registered successfully");
+            modelAndView.addObject("user", new User());
+            modelAndView.setViewName("registration");
+
+        }
+        return modelAndView;
+    }
+
+
+//    @RequestMapping(value = "/user/{username}", method = GET)
+//    public String showUserProfile(
+//            @PathVariable String username, Model model) {
+//        User user = userRepository.findByUsername(username);
+//        model.addAttribute(user);
+//        return "profile";
+//    }
 
 }

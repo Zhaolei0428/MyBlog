@@ -10,6 +10,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 public class HomeController {
     @RequestMapping(method = GET)
     public String home() {
-        return "home";
+        return "login";
     }
 }
