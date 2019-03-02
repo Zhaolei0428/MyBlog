@@ -1,0 +1,104 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta content="text/html;charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <title>blogList</title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" />
+    <link rel="stylesheet" th:href="@{/css/blog.css}" />
+    <script th:src="@{/js/jquery-2.0.3.min.js}"></script>
+    <!--每页单独引入的文件在head里面或者html后面写,要不然只加载母版的js，不加载单独引入的 -->
+    <script th:src="@{/js/jsrender.js}"></script>
+    <script th:src="@{/js/blog/blogList.js}"></script>
+    <script th:src="@{/layer/layer.js}"></script>
+    <script th:inline="javascript">
+        $(function () {
+            var token = [[${_csrf.token}]];
+            blogList.init({
+                maxPage : parseInt([[${page}]]),
+                page : 1,
+                blogType : [[${blogType}]],
+                keywords : [[${keywords}]],
+                token : token    //Spring Security POST方式下的CSRF验证
+            })
+        })
+    </script>
+</head>
+<body>
+<header th:replace="common/layout::header"></header>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <!--<article th:each="blog: ${blogList}">-->
+                <!--<h2><a th:href="|/blog/info/${blog.blogId}|" th:text="${blog.blogName}"></a></h2>-->
+                <!--<div class="row">-->
+                    <!--<div class="col-sm-6 col-md-6">-->
+                        <!--<span class="glyphicon glyphicon-folder-open"></span> &nbsp;<a href="javascript:void(0);" th:text="${blog.blogType}"></a>-->
+                        <!--&nbsp;&nbsp;<span class="glyphicon glyphicon-bookmark"></span>-->
+                    <!--</div>-->
+                    <!--<div class="col-sm-6 col-md-6">-->
+                        <!--<span class="glyphicon glyphicon-pencil"></span> <a href="javascript:void(0);" th:text="${blog.browse}"></a>-->
+                        <!--&nbsp;&nbsp;<span class="glyphicon glyphicon-time" th:text="${blog.time}"></span>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<hr/>-->
+                <!--<img th:src="${blog.blogImg}" class="img-responsive" />-->
+                <!--<br />-->
+                <!--<p class="lead" th:text="${blog.introduction}">-->
+                    <!--{{:blog.introduction}}-->
+                <!--</p>-->
+                <!--<p class="text-right">-->
+                    <!--<a th:href="|/blog/info/${blog.blogId}|">-->
+                        <!--阅读更多-->
+                    <!--</a>-->
+                <!--</p>-->
+                <!--<hr/>-->
+            <!--</article>-->
+
+            <script type="text/x-jsrender" id="blogListJsrender">
+                    {{for blog}}
+						<article>
+							<h2><a href="/blog/info/{{:blogId}}">{{:blogName}}</a></h2>
+					        <div class="row">
+					          	<div class="col-sm-6 col-md-6">
+					          		<span class="glyphicon glyphicon-folder-open"></span> &nbsp;<a href="javascript:void(0);">{{:blogType}}</a>
+					          		&nbsp;&nbsp;<span class="glyphicon glyphicon-bookmark"></span>
+					          		{{for tags}}
+									    <span>{{:tagName}}</span>
+									{{/for}}
+					          	</div>
+					          	<div class="col-sm-6 col-md-6">
+					          		<span class="glyphicon glyphicon-pencil"></span> <a href="javascript:void(0);">{{:browse}}</a>
+					          		&nbsp;&nbsp;<span class="glyphicon glyphicon-time"></span> {{times:time}}
+					          	</div>
+					          </div>
+					          <hr/>
+					          <img src="{{:blogImg}}" class="img-responsive" />
+					          <br />
+					          <p class="lead">
+					          	{{:introduction}}
+					          </p>
+							  <p class="text-right">
+						          <a href="/blog/info/{{:blogId}}">
+						          	阅读更多
+						          </a>
+						      </p>
+					          <hr/>
+						</article>
+					{{/for}}
+			</script>
+
+            <div id="blogList"></div>
+            <ul class="pager" style="display: none;">
+                <a href="javascript:void(0);" class="load-more">加载更多</a>
+            </ul>
+        </div>
+        <div th:replace="common/layout::rightContent"></div>
+    </div>
+</div>
+
+<footer th:replace="common/layout::footer"></footer>
+</body>
+<div th:replace="common/layout::layoutJs"></div>
+</html>

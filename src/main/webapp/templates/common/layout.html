@@ -1,0 +1,135 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta content="text/html;charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <title>layout</title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" />
+    <link rel="stylesheet" th:href="/css/blog.css" />
+    <script th:src="/js/jquery-2.0.3.min.js"></script>
+    <meta content="text/html;charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <title th:text="${blogInfo.blog.blogName }"></title>
+    <!--每页单独引入的文件在head里面或者html后面写,要不然只加载母版的js，不加载单独引入的 -->
+    <link rel="stylesheet" href="/editormd/css/editormd.css" />
+    <link rel="stylesheet" href="/editormd/css/editormd.preview.min.css" />
+    <link rel="stylesheet" href="/zoomify/zoomify.min.css" />
+    <style type="text/css">
+        img{
+            width:100%;
+        }
+        #content{
+            overflow: visible;
+        }
+    </style>
+</head>
+<body>
+<header th:fragment="header" class="navbar navbar-inverse navbar-fixed-top bs-docs-nav" role="banner">
+    <div class="container">
+        <div class="navbar-header">
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+                <span class="sr-only">切换导航</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">MyBlog</a>
+        </div>
+        <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+            <form class="navbar-form navbar-right" role="search">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Search" id="keywords"/>
+                </div>
+                <button type="button" class="btn btn-default" id="search">Submit</button>
+            </form>
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="/blog">Blog</a></li>
+                <li><a href="https://github.com/Zhaolei0428" target="_blank">Github</a></li>
+                <li><a href="/show/blog" target="_blank">热点统计</a></li>
+                <li><a href="/admin">后台管理</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<div class="container">
+    <div class="row">
+
+        <div th:fragment="rightContent" class="col-md-4">
+            <div class="well text-center">
+                <p class="lead" th:text="|访问量: ${blogNum}|"></p>
+            </div>
+
+            <!-- Latest Posts -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>最新博客</h4>
+                </div>
+                <ul class="list-group">
+                    <li class="list-group-item" th:each="blog: ${newBlogList}">
+                        <a th:href="@{'/blog/info/'+${blog.blogId}}" th:text="${blog.blogName}"></a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Categories -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>博客分类</h4>
+                </div>
+                <ul class="list-group" id="blogTypeList">
+                    <li class="list-group-item" th:each="type : ${typeList}">
+                        <a th:href="|/blog/${type.typeName}|" th:text="${type.typeName}"></a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Tags -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>标签</h4>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-inline">
+                        <li th:each="tag : ${tagList}" th:text="${tag.tagName}"></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Recent Comments -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>阅读排行</h4>
+                </div>
+                <ul class="list-group">
+                    <li class="list-group-item" th:each="blog: ${readBlogList}">
+                        <a th:href="@{'/blog/info/'+${blog.blogId}}" th:text="${blog.blogName}"></a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<footer th:fragment="footer">
+    <div class="container">
+        <hr />
+        <p class="text-center">Copyright &copy; <a style="color:gray" th:href="@{http://www.miitbeian.gov.cn}">com.zhao.blog</a></p>
+    </div>
+</footer>
+</body>
+<div th:fragment="layoutJs">
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/js/common/layout.js"></script>
+    <script th:inline="javascript">
+        $(function () {
+            layout.init({
+                blogType : [[${blogType}]],
+                keywords : [[${keywords}]]
+            });
+        })
+    </script>
+</div>
+</html>

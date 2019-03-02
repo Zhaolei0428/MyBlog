@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta content="text/html;charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>adminLayout</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+
+    <!-- Custom styles for this template -->
+    <link href="/css/admin/dashboard.css" rel="stylesheet" />
+    <script src="/js/jquery-2.0.3.min.js"></script>
+    <script src="/layer/layer.js"></script>
+</head>
+
+<body>
+
+<nav th:fragment="nav" class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/blog" th:if="${session.SPRING_SECURITY_CONTEXT}" th:text="${session.SPRING_SECURITY_CONTEXT.authentication.principal.username}">admin</a>
+        </div>
+    </div>
+</nav>
+
+</body>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="/js/common/adminLayout.js"></script>
+<script th:inline="javascript">
+    $(function () {
+        adminLayout.init();
+    })
+</script>
+</html>
